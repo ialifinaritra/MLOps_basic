@@ -55,20 +55,18 @@ def main(cfg):
     cola_model = ColaModel(cfg.model.name)
 
     checkpoint_callback = ModelCheckpoint(
-        dirpath="models/",
+        dirpath="models",
         filename="best-checkpoint",
         monitor="valid/loss",
         mode="min",
     )
 
     early_stopping_callback = EarlyStopping(
-        monitor="valid/loss", patience=3, verbose=True, mode="min"
+        monitor="valid/loss", patience=5, verbose=True, mode="min"
     )
 
-    wandb_logger = WandbLogger(project="Cola_Project")
     trainer = pl.Trainer(
         max_epochs=cfg.training.max_epochs,
-        logger=wandb_logger,
         callbacks=[checkpoint_callback,  early_stopping_callback],
         log_every_n_steps=cfg.training.log_every_n_steps,
         deterministic=cfg.training.deterministic,
@@ -77,7 +75,6 @@ def main(cfg):
     )
 
     trainer.fit(cola_model, cola_data)
-    wandb.finish()
 
 
 if __name__ == "__main__":
